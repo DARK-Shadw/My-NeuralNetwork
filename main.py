@@ -1,14 +1,11 @@
-from matrix import Matrix
+from NeuralNetwork import NeuralNetwork
 
+nn = NeuralNetwork(2, 2, 1)
 
-a = Matrix(2,3)
-b = Matrix(3,2)
+input = [1,0]
+targets = [1]
+# output = nn.feedforward(input)
 
+nn.train(input, targets)
 
-a.randomize()
-b.randomize()
-a.printMatrix()
-b.printMatrix()
-
-c = Matrix.multiply(a,b)
-c.printMatrix()
+# print(output)
