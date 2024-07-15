@@ -52,7 +52,7 @@ class Matrix:
             return None
 
 
-    def multiply(self, n):
+    def multiply_scalar(self, n):
         for row in range(self.row):
             for col in range(self.col):
                 self.matrix[row][col] = self.matrix[row][col] * n
