@@ -93,9 +93,10 @@ class NeuralNetwork:
         input_T = Matrix.transpose(input)
         weights_hi_delta = Matrix.multiply(hidden_gradient, input_T)
 
-        
+
         self.weigths_ih.add(weights_hi_delta)
         self.bias_h.add(hidden_gradient)
 
 
-        # TODO: Implement or use Gradient Descent to tweak the weights based on the errors
+    def set_learning_rate(self, n: float):
+        self.learning_rate = n
