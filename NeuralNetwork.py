@@ -5,6 +5,9 @@ from math import exp
 def sigmoid(n):
     return 1 / (1 + exp(-n))
 
+def dsigmoid(y):
+    return y * (1 - y)
+
 class NeuralNetwork:
     def __init__(self, n_input, n_hidden, n_output) -> None:
         self.num_input = n_input
@@ -19,6 +22,8 @@ class NeuralNetwork:
         self.bias_o = Matrix(self.num_output, 1)
         self.bias_h.randomize()
         self.bias_o.randomize()
+
+        self.learning_rate = 0.1
 
 
 
@@ -40,16 +45,57 @@ class NeuralNetwork:
         return output.toArray()
     
     def train(self, inputs, targets):
-        outputs = self.feedforward(inputs)
+        input = Matrix.fromArray(inputs)
 
-        outputs = Matrix.fromArray(outputs)
+        # Generating the Hidden layer data
+        hidden = Matrix.multiply(self.weigths_ih, input)    # Weigthed sum from input to hidden
+        hidden.add(self.bias_h)         # adding bias
+        hidden.map(sigmoid)             # activation function
+
+        # Generating Output layer data
+        outputs = Matrix.multiply(self.weigths_ho, hidden)    # Weigthed sum from hidden to output
+        outputs.add(self.bias_o)         # adding bias
+        outputs.map(sigmoid)             # activation function
+
         targets = Matrix.fromArray(targets)
 
         # calculate the output layers error
         output_errors = Matrix.substract(targets, outputs)
 
+        # Calculate Gradient
+        gradients = Matrix.static_map(outputs, dsigmoid)
+        gradients = Matrix.multiply(gradients, output_errors)
+        gradients.multiply_scalar(self.learning_rate)
+
+
+        # Calculate Output -> Hidden deltas
+        # eq: <>W_ho = lr * E * (O*(1-0)*H))
+        hidden_T = Matrix.transpose(hidden)
+        weights_ho_delta = Matrix.multiply(gradients, hidden_T)
+
+        # Adjust weights by delats
+        self.weigths_ho.add(weights_ho_delta)
+        # Adjust the deltas by its bias (which is just gradients)
+        self.bias_o.add(gradients)
+
+
         # Calculate the hidden layers error
         who_t = Matrix.transpose(self.weigths_ho)
         hidden_errors = Matrix.multiply(who_t, output_errors)
+
+        # Calculate hidden Gradient
+        hidden_gradient = Matrix.static_map(hidden, dsigmoid)
+        hidden_gradient = Matrix.multiply(hidden_gradient, hidden_errors)
+        hidden_gradient.multiply_scalar(self.learning_rate)
+
+
+        # Calculate Hidden -> Input deltas
+        input_T = Matrix.transpose(input)
+        weights_hi_delta = Matrix.multiply(hidden_gradient, input_T)
+
+        
+        self.weigths_ih.add(weights_hi_delta)
+        self.bias_h.add(hidden_gradient)
+
 
         # TODO: Implement or use Gradient Descent to tweak the weights based on the errors

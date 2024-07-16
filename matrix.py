@@ -60,23 +60,14 @@ class Matrix:
 
     @staticmethod
     def multiply(a, b):
-
-        if a.row == b.row and a.col == b.col:
-                for row in range(a.row):
-                    for col in range(a.col):
-                        a.matrix[row][col] = a.matrix[row][col] * b.matrix[row][col]
-        elif a.col == b.row:
-            result = Matrix(a.row, b.col)
-            for i in range(result.row):
-                for j in range(result.col):
-                    sum = 0
-                    for k in range(a.col):
-                        sum += a.matrix[i][k] * b.matrix[k][j]
-                    result.matrix[i][j] = sum
-            return result
-        else:
-            print("Col of A != row of B")
-            return None
+        result = Matrix(a.row, b.col)
+        for i in range(result.row):
+            for j in range(result.col):
+                sum = 0
+                for k in range(a.col):
+                    sum += a.matrix[i][k] * b.matrix[k][j]
+                result.matrix[i][j] = sum
+        return result
 
 
     def multiply_scalar(self, n):
@@ -101,3 +92,13 @@ class Matrix:
                 for col in range(self.col):
                     val = self.matrix[row][col]
                     self.matrix[row][col] = fn(val)
+
+    @staticmethod
+    def static_map(input, fn):
+        result = Matrix(input.row, input.col)
+        for row in range(input.row):
+                for col in range(input.col):
+                    val = input.matrix[row][col]
+                    result.matrix[row][col] = fn(val)
+        return result
+        
